@@ -8,11 +8,13 @@ const cors_1 = __importDefault(require("cors"));
 const projects_1 = __importDefault(require("./routes/projects"));
 const clients_1 = __importDefault(require("./routes/clients"));
 const employees_1 = __importDefault(require("./routes/employees"));
+const projectTeams_1 = __importDefault(require("./routes/projectTeams"));
 const typeorm_1 = require("typeorm");
 const dotenv_1 = __importDefault(require("dotenv"));
 const Employee_1 = require("./entities/Employee");
 const ClientDetail_1 = require("./entities/ClientDetail");
 const Project_1 = require("./entities/Project");
+const ProjectsTeam_1 = require("./entities/ProjectsTeam");
 dotenv_1.default.config();
 const main = async () => {
     await (0, typeorm_1.createConnection)({
@@ -22,17 +24,18 @@ const main = async () => {
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         logging: true,
-        entities: [Employee_1.Employee, ClientDetail_1.ClientDetail, Project_1.Project],
+        entities: [Employee_1.Employee, ClientDetail_1.ClientDetail, Project_1.Project, ProjectsTeam_1.ProjectsTeam],
         options: {
             readOnlyIntent: true,
         },
     });
     const app = (0, express_1.default)();
-    app.use((0, cors_1.default)({ origin: process.env.CORS_ORIGIN, credentials: true }));
+    app.use((0, cors_1.default)({ origin: process.env.CORS_ORIGIN, credentials: false }));
     app.use(express_1.default.json());
     app.use("/api/projects", projects_1.default);
     app.use("/api/clients", clients_1.default);
     app.use("/api/employees", employees_1.default);
+    app.use("/api/projectTeams", projectTeams_1.default);
     app.listen(process.env.PORT || 5000, () => console.log(`Server started at port ${process.env.PORT || 5000}.`));
 };
 main().catch((error) => console.log(error));

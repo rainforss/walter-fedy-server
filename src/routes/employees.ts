@@ -6,10 +6,22 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
+    //Check for top and skip query strings so that we do not return thousands of records for projects
+    const { top, skip, ...dbQuery } = req.query;
+    if (!top || !skip) {
+      return res.status(404).json({
+        error: {
+          message:
+            "You must have 'top' and 'skip' query strings in the request URL.",
+        },
+      });
+    }
+    const topCount = parseInt(top as string);
+    const skipCount = parseInt(skip as string);
     const employee = new Employee();
     const properties = Object.getOwnPropertyNames(employee);
     let hasInvalidQuery = false;
-    Object.keys(req.query).forEach((k) => {
+    Object.keys(dbQuery).forEach((k) => {
       if (properties.findIndex((p) => p === k) === -1) {
         return (hasInvalidQuery = true);
       }
@@ -17,22 +29,24 @@ router.get("/", async (req, res) => {
     });
 
     if (hasInvalidQuery) {
-      return res
-        .status(400)
-        .json({
-          error: {
-            message: `Invalid query parameters exist. Valid query parameters are: ${properties.join(
-              ", "
-            )}.`,
-          },
-        });
+      return res.status(400).json({
+        error: {
+          message: `Invalid query parameters exist. Valid query parameters are: ${properties.join(
+            ", "
+          )}.`,
+        },
+      });
     }
 
     const dbCondition = constructQuery(
-      req.query as { [key: string]: string | undefined }
+      dbQuery as { [key: string]: string | undefined }
     );
 
-    const employees = await Employee.find({ where: dbCondition });
+    const employees = await Employee.find({
+      where: dbCondition,
+      take: topCount,
+      skip: skipCount,
+    });
     if (employees.length === 0) {
       return res
         .status(404)

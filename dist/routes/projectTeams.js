@@ -16,7 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const constructQuery_1 = require("../utils/constructQuery");
-const Project_1 = require("../entities/Project");
+const ProjectsTeam_1 = require("../entities/ProjectsTeam");
 const router = express_1.default.Router();
 router.get("/", async (req, res) => {
     try {
@@ -30,8 +30,8 @@ router.get("/", async (req, res) => {
         }
         const topCount = parseInt(top);
         const skipCount = parseInt(skip);
-        const project = new Project_1.Project();
-        const properties = Object.getOwnPropertyNames(project);
+        const projectTeam = new ProjectsTeam_1.ProjectsTeam();
+        const properties = Object.getOwnPropertyNames(projectTeam);
         let hasInvalidQuery = false;
         Object.keys(dbQuery).forEach((k) => {
             if (properties.findIndex((p) => p === k) === -1) {
@@ -47,35 +47,37 @@ router.get("/", async (req, res) => {
             });
         }
         const dbCondition = (0, constructQuery_1.constructQuery)(dbQuery);
-        const projects = await Project_1.Project.find({
+        const projectTeams = await ProjectsTeam_1.ProjectsTeam.find({
             where: dbCondition,
-            skip: skipCount,
             take: topCount,
+            skip: skipCount,
         });
-        if (projects.length === 0) {
-            return res.status(404).json({ error: { message: "No projects found." } });
+        if (projectTeams.length === 0) {
+            return res
+                .status(404)
+                .json({ error: { message: "No project teams found." } });
         }
-        return res.status(200).json(projects);
+        return res.status(200).json(projectTeams);
     }
     catch (error) {
         return res.status(400).json(error);
     }
 });
-router.get("/:projectNumber", async (req, res) => {
+router.get("/:number", async (req, res) => {
     try {
-        const project = await Project_1.Project.findOne({
-            where: { projectNumber: req.params.projectNumber },
+        const projectTeam = await ProjectsTeam_1.ProjectsTeam.findOne({
+            where: { number: req.params.number },
         });
-        if (!project) {
+        if (!projectTeam) {
             return res
                 .status(404)
-                .json({ error: { message: "Project does not exist." } });
+                .json({ error: { message: "Project team does not exist." } });
         }
-        return res.status(200).json(Project_1.Project);
+        return res.status(200).json(projectTeam);
     }
     catch (error) {
         return res.status(400).json(error);
     }
 });
 exports.default = router;
-//# sourceMappingURL=projects.js.map
+//# sourceMappingURL=projectTeams.js.map

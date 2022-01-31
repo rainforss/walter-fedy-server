@@ -6,10 +6,22 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
+    //Check for top and skip query strings so that we do not return thousands of records for projects
+    const { top, skip, ...dbQuery } = req.query;
+    if (!top || !skip) {
+      return res.status(404).json({
+        error: {
+          message:
+            "You must have 'top' and 'skip' query strings in the request URL.",
+        },
+      });
+    }
+    const topCount = parseInt(top as string);
+    const skipCount = parseInt(top as string);
     const client = new ClientDetail();
     const properties = Object.getOwnPropertyNames(client);
     let hasInvalidQuery = false;
-    Object.keys(req.query).forEach((k) => {
+    Object.keys(dbQuery).forEach((k) => {
       if (properties.findIndex((p) => p === k) === -1) {
         return (hasInvalidQuery = true);
       }
@@ -27,10 +39,14 @@ router.get("/", async (req, res) => {
     }
 
     const dbCondition = constructQuery(
-      req.query as { [key: string]: string | undefined }
+      dbQuery as { [key: string]: string | undefined }
     );
 
-    const clients = await ClientDetail.find({ where: dbCondition });
+    const clients = await ClientDetail.find({
+      where: dbCondition,
+      take: topCount,
+      skip: skipCount,
+    });
     if (clients.length === 0) {
       return res.status(404).json({ error: { message: "No clients found." } });
     }
