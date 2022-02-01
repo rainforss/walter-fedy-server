@@ -46,6 +46,9 @@ router.get("/", async (req, res) => {
       where: dbCondition,
       skip: skipCount,
       take: topCount,
+      order: {
+        projectNumber: "DESC",
+      },
     });
 
     if (projects.length === 0) {

@@ -22,6 +22,10 @@ __decorate([
     __metadata("design:type", String)
 ], Project.prototype, "family", void 0);
 __decorate([
+    (0, typeorm_1.Column)("varchar", { length: 40 }),
+    __metadata("design:type", String)
+], Project.prototype, "name", void 0);
+__decorate([
     (0, typeorm_1.Column)("varchar", { length: 11 }),
     __metadata("design:type", String)
 ], Project.prototype, "stage", void 0);
@@ -69,14 +73,6 @@ __decorate([
     (0, typeorm_1.Column)("datetime"),
     __metadata("design:type", Date)
 ], Project.prototype, "constructionEnd", void 0);
-__decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 38, scale: 4 }),
-    __metadata("design:type", String)
-], Project.prototype, "ownerClientRevenue", void 0);
-__decorate([
-    (0, typeorm_1.Column)("decimal", { precision: 38, scale: 4 }),
-    __metadata("design:type", String)
-], Project.prototype, "billingClientRevenue", void 0);
 Project = __decorate([
     (0, typeorm_1.Entity)()
 ], Project);

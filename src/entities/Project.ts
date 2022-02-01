@@ -8,6 +8,9 @@ export class Project extends BaseEntity {
   @Column("varchar", { length: 9 })
   family: string;
 
+  @Column("varchar", { length: 40 })
+  name: string;
+
   @Column("varchar", { length: 11 })
   stage!: string;
 
@@ -43,10 +46,4 @@ export class Project extends BaseEntity {
 
   @Column("datetime")
   constructionEnd: Date;
-
-  @Column("decimal", { precision: 38, scale: 4 })
-  ownerClientRevenue: string;
-
-  @Column("decimal", { precision: 38, scale: 4 })
-  billingClientRevenue: string;
 }

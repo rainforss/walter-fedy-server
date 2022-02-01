@@ -51,6 +51,9 @@ router.get("/", async (req, res) => {
             where: dbCondition,
             skip: skipCount,
             take: topCount,
+            order: {
+                projectNumber: "DESC",
+            },
         });
         if (projects.length === 0) {
             return res.status(404).json({ error: { message: "No projects found." } });
